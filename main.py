@@ -11,7 +11,7 @@ import math
 def isearch(L, x):
     def found_update(found, v):
         return found or v == x
-        return iterate(found_update, False, L)
+    return iterate(found_update, False, L)
 
     pass
 
@@ -24,7 +24,8 @@ def iterate(f, x, a):
 
 # search an unordered list L for a key x using reduce
 def rsearch(L, x):
-    ###TODO
+    matches = list(map(lambda v: v == x, L))
+    return reduce(lambda a, b: a or b, False, matches)
     ###
     pass
 
@@ -91,9 +92,15 @@ def parens_update(current_output, next_input):
     Returns:
       the updated value of `current_output`
     """
-    ###TODO
-    ###
-    pass
+    if current_output == -math.inf:
+        return current_output
+    if next_input == '(':
+        return current_output + 1
+    if next_input == ')':
+        if current_output <= 0:
+            return -math.inf
+        return current_output - 1
+    return current_output
 
 #### Scan solution
 
@@ -114,9 +121,8 @@ def parens_match_scan(mylist):
     False
     
     """
-    ###TODO
-    ###
-    pass
+    history, last = scan(plus, 0, list(map(paren_map, mylist)))
+    return last == 0 and reduce(min_f, 0, history) >= 0
 
 def scan(f, id_, a):
     """
@@ -183,13 +189,15 @@ def parens_match_dc_helper(mylist):
       L is the number of unmatched left parentheses. This output is used by 
       parens_match_dc to return the final True or False value
     """
-    ###TODO
-    # base cases
-    
-    # recursive case
-    # - first solve subproblems
-    
-    # - then compute the solution (R,L) using these solutions, in constant time.
-    
-    ###
-    pass
+    if len(mylist) == 0:
+        return (0, 0)
+    if len(mylist) == 1:
+        if mylist[0] == '(':
+            return (0, 1)
+        if mylist[0] == ')':
+            return (1, 0)
+        return (0, 0)
+    i, j = parens_match_dc_helper(mylist[:len(mylist)//2])
+    k, l = parens_match_dc_helper(mylist[len(mylist)//2:])
+    matched = min(j, k)
+    return (i + k - matched, j + l - matched)
